@@ -3,7 +3,7 @@ title: 'Working with Canvas Extensions'
 description: 'Create and iterate on GitHub Copilot app canvases using /create-canvas, then shape them into reusable project or personal extensions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-17
+lastUpdated: 2026-07-23
 estimatedReadingTime: '8 minutes'
 tags:
   - copilot-app
@@ -110,6 +110,19 @@ Reference implementations:
 - SDK docs/source: [`joinSession`](https://github.com/github/copilot-sdk/blob/main/nodejs/docs/extensions.md), [`createCanvas`](https://github.com/github/copilot-sdk/blob/main/nodejs/src/canvas.ts)
 - Repo example: [`extensions/backlog-swipe-triage/extension.mjs`](https://github.com/github/awesome-copilot/blob/main/extensions/backlog-swipe-triage/extension.mjs)
 - Persistent user-scoped path example: [`extensions/chromium-control-canvas/extension.mjs`](https://github.com/github/awesome-copilot/blob/main/extensions/chromium-control-canvas/extension.mjs)
+
+## Canvas Extensions in Copilot CLI (v1.0.71+)
+
+Canvas support is no longer limited to the GitHub Copilot app. As of v1.0.71, the Copilot CLI also supports extension-driven canvas interactions, letting extensions open panels, render UI controls, and call canvas capabilities from a terminal session.
+
+This means canvas extensions installed via plugins are now active in CLI sessions when the extension's code handles the CLI runtime environment. Extensions that used the Copilot SDK's `joinSession`/`createCanvas` API can surface interactive panels in the CLI's split-pane view just as they do in the app.
+
+**What this enables**:
+- Canvas extensions installed as part of a plugin work automatically in the CLI
+- Extensions can open canvases during agent sessions in the terminal
+- The same extension code can serve both app and CLI surfaces when written portably
+
+> **Note**: Not all canvas extensions will automatically work in the CLI — extensions that depend on browser-specific APIs (like the Chromium control canvas) are inherently app-only. Extensions using only the Copilot SDK's canvas API will work across both.
 
 ## Examples from this repository
 

@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-23
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -34,6 +34,8 @@ A plugin bundles one or more of the following components:
 | **MCP Servers** | Model Context Protocol integrations for external tools | `.mcp.json` or `.github/mcp.json` |
 | **LSP Servers** | Language Server Protocol integrations | `lsp.json` or `.github/lsp.json` |
 | **Extensions** | IDE extensions installable via the plugin marketplace (v1.0.62+) | `extensions/` |
+
+> **Open Plugin Spec v1 (v1.0.74+)**: Copilot CLI now supports the [Open Plugin Spec v1](https://modelcontextprotocol.io/specification/2025-06-18/client/plugins) plugin manifest format. If a plugin directory contains an `mcp.json` file alongside a `plugin.json`, the CLI merges both when loading the plugin. This means plugins authored for other AI coding tools that use the Open Plugin Spec are directly installable in Copilot CLI without any conversion.
 
 A plugin might include all of these or just one — for example, a plugin could provide a single specialized agent, or an entire development toolkit with multiple agents, skills, hooks, and MCP server configurations working together.
 
@@ -221,6 +223,29 @@ copilot plugin marketplace update
 # Remove a plugin
 copilot plugin uninstall my-plugin
 ```
+
+### Installing Skills Directly (v1.0.72+)
+
+You can install individual skills from a file, URL, or directory without wrapping them in a full plugin. Use `--scope project` to install into the current repository instead of globally:
+
+```bash
+# Install a skill from a local directory (user-scoped, available in all sessions)
+copilot plugins install --skill ./my-skill/
+
+# Install a skill from a URL (user-scoped)
+copilot plugins install --skill https://github.com/my-org/skills/archive/main.tar.gz
+
+# Install a skill into the current project (.github/skills/)
+copilot plugins install --skill ./my-skill/ --scope project
+```
+
+To remove a skill installed this way:
+
+```bash
+copilot plugins remove --skill my-skill-name
+```
+
+> **Tip**: Use `copilot skill list` to see all installed skills and their enabled/disabled status.
 
 ### Loading Plugins from a Local Directory
 

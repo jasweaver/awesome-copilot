@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-23
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -470,6 +470,16 @@ The settings dialog supports search — type to filter settings by name. Changes
 
 These flags mirror the **Repo** and **Repo (local)** scope tabs available in the `/settings` dashboard (v1.0.71+), making it easier to manage per-repository vs. user-global configuration without ambiguity. In v1.0.71+, the `/settings` dashboard also shows **Repo** and **Repo (local)** tabs alongside the existing user-level view, giving you a unified place to see which settings are applied at each layer.
 
+*(v1.0.72+)* Use `/model --session` (or `-s`) to change the model, reasoning effort, or context window for just the **current session only**, leaving your global and repository settings unchanged:
+
+```
+/model --session                    # open picker scoped to current session
+/model -s claude-sonnet-4.6         # set model for this session only
+/model -s claude-sonnet-4.6 --high  # set model + reasoning effort for this session
+```
+
+Session-scoped model changes are temporary — they do not persist after the session ends.
+
 GitHub Copilot CLI has two commands for managing session state, with distinct behaviours:
 
 | Command | Behaviour |
@@ -743,6 +753,18 @@ copilot --plan          # start in plan mode (propose without executing)
 ```
 
 This is useful in scripts or CI pipelines where you want the CLI to immediately begin working in a specific mode without an interactive prompt.
+
+**Plan mode behavior (v1.0.71+)**: Plan mode now hard-blocks built-in tool calls that would modify the workspace — the agent cannot edit files or run mutating shell commands while planning. This ensures the agent stays in a pure "propose, don't execute" state. Non-mutating operations and MCP/external tool calls are still allowed.
+
+**Selecting a model for plan mode (v1.0.74+)**: You can pick a separate model for plan mode that differs from your main session model. Use `/model plan` (or `/model --plan`) in an active session and pass a model ID, `off` to clear the override, or no argument to open the picker:
+
+```
+/model plan                 # open picker to select a plan-mode model
+/model plan gemini-2.5-pro  # set a specific model for plan mode
+/model plan off             # remove the plan-mode model override
+```
+
+The plan-mode model is used only while in plan mode; the session reverts to your normal model when you leave plan mode.
 
 The `--max-autopilot-continues` flag controls how many times Copilot can automatically continue in autopilot mode before pausing for confirmation. The default is 5:
 
