@@ -3,7 +3,7 @@ title: 'Building Custom Agents'
 description: 'Learn how to create specialized GitHub Copilot agents with custom personas, tool integrations, and domain expertise.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-09
+lastUpdated: 2026-07-24
 estimatedReadingTime: '10 minutes'
 tags:
   - agents
@@ -254,13 +254,34 @@ The agent can then query your database, analyze query plans, and suggest optimiz
 
 | Scenario | Recommended Model |
 |----------|-------------------|
+| Highest capability reasoning, complex multi-step tasks | Claude Opus 5 *(v1.0.75+)* |
 | Most demanding reasoning, security review | Claude Sonnet 5 *(v1.0.67+)* |
 | Complex reasoning, analysis | Claude Sonnet 4 |
 | Code generation, tool-driven agentic work | GPT-5.6 *(v1.0.70+)* |
 | Code generation, refactoring | GPT-4.1 |
 | Code-specialized tasks, large context | kimi-k2.7-code *(v1.0.68+)* |
+| Fast, cost-efficient tasks | gemini-3.6-flash *(v1.0.74+)* |
 | Quick analysis, simple tasks | Claude Haiku or GPT-4.1-mini |
 | Large codebase understanding | Models with larger context windows |
+
+### Per-Session and Plan-Mode Model Overrides
+
+While the `model` field in an agent's frontmatter sets the default for all sessions using that agent, you can also override the model for a specific session or plan mode without changing the agent file:
+
+- **`/model --session`** *(v1.0.72+)*: Changes the model, reasoning effort, or context window for just the current session, leaving your global settings unchanged. Useful when you want to try a different model for one task without affecting your defaults:
+
+  ```
+  /model --session claude-opus-5
+  ```
+
+- **`/model plan`** *(v1.0.74+)*: Picks a model used specifically while in plan mode. Pass a model ID to set it, `off` to clear the override, or no ID to open the picker. The session model resumes when you leave plan mode:
+
+  ```
+  /model plan claude-sonnet-4
+  /model --plan off
+  ```
+
+These overrides are useful when you want lighter models for planning (to save cost) and heavier models for execution, or when experimenting with new models mid-session.
 
 ### Organizing Agents in Your Repository
 
