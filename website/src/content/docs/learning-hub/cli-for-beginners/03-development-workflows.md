@@ -3,7 +3,7 @@ title: '03 · Development Workflows'
 description: 'Mirror the source development workflow chapter covering review, debugging, testing, and git support.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-03
+lastUpdated: 2026-07-24
 ---
 
 ![Chapter 03: Development Workflows](/images/learning-hub/copilot-cli-for-beginners/03/chapter-header.png)
@@ -596,7 +596,7 @@ This example uses the `-p` inline prompt flag with shell command substitution to
 # See what changed
 git diff --staged
 
-# Generate commit message using [Conventional Commit](https://github.com/github/copilot-cli-for-beginners/blob/main/GLOSSARY.md#conventional-commit) format
+# Generate commit message using [Conventional Commit](../GLOSSARY.md#conventional-commit) format
 # (structured messages like "feat(books): add search" or "fix(data): handle empty input")
 copilot -p "Generate a conventional commit message for: $(git diff --staged)"
 
@@ -667,7 +667,7 @@ $(git diff main..HEAD)"
 
 ### Using /delegate for Background Tasks
 
-The `/delegate` command hands off work to the Copilot coding agent on GitHub. Use the `/delegate` slash command (or the `&` shortcut) to offload a well-defined task to a background agent.
+The `/delegate` command hands off work to the GitHub Copilot cloud agent. Use the `/delegate` slash command (or the `&` shortcut) to offload a well-defined task to a background agent.
 
 ```bash
 copilot
@@ -754,7 +754,7 @@ copilot
 > Users report: 'Finding books by author name doesn't work for partial names'
 > @samples/book-app-project/books.py Analyze and identify the likely cause
 
-# 2. Debug the issue (continuing in same session)
+# 2. Debug the issue and fix (continuing in same session)
 > Based on the analysis, show me the find_by_author function and explain the issue
 
 > Fix the find_by_author function to handle partial name matches
@@ -766,10 +766,23 @@ copilot
 > - Case-insensitive matching
 > - Author name not found
 
-# 4. Generate commit message
+# Exit the interactive session
+
+> /exit
+
+# 4. Run git add
+
+# Stage the changes so git diff --staged has something to work with
+git add .
+
+# 5. Generate commit message
 copilot -p "Generate commit message for: $(git diff --staged)"
 
-# Output: "fix(books): support partial author name search"
+# Example Output: "fix(books): support partial author name search"
+
+# 6. Commit changes (optional)
+
+git commit -m "<paste generated message>"
 ```
 
 ### Bug Fix Workflow Summary
@@ -777,16 +790,17 @@ copilot -p "Generate commit message for: $(git diff --staged)"
 | Step | Action | Copilot Command |
 |------|--------|-----------------|
 | 1 | Understand the bug | `> [describe bug] @relevant-file.py Analyze the likely cause` |
-| 2 | Get detailed analysis | `> Show me the function and explain the issue` |
-| 3 | Implement the fix | `> Fix the [specific issue]` |
-| 4 | Generate tests | `> Generate tests for [specific scenarios]` |
-| 5 | Commit | `copilot -p "Generate commit message for: $(git diff --staged)"` |
+| 2 | Analysis and fix | `> Show me the function and fix the issue` |
+| 3 | Generate tests | `> Generate tests for [specific scenarios]` |
+| 4 | Stage changes | `git add .` |
+| 5 | Generate commit message | `copilot -p "Generate commit message for: $(git diff --staged)"` |
+| 6 | Commit changes| `git commit -m "<paste generated message>"` |
 
 ---
 
 # Practice
 
-<img src="/images/learning-hub/copilot-cli-for-beginners/03/practice.png" alt="Warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice" width="800"/>
+<img src="../assets/practice.png" alt="Warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice" width="800"/>
 
 Now it's your turn to apply these workflows.
 
@@ -866,7 +880,7 @@ copilot
 
 The exercise shows developers how to use GitHub Copilot CLI to create issues, generate code, and collaborate from the terminal while building a Node.js calculator app. You'll install the CLI, use templates and agents, and practice iterative, command-line driven development.
 
-##### <img src="/images/learning-hub/copilot-cli-for-beginners/03/github-skills-logo.png" width="28" align="center" /> [Start the "Create applications with the Copilot CLI" Skills Exercise](https://github.com/skills/create-applications-with-the-copilot-cli)
+##### <img src="../assets/github-skills-logo.png" width="28" align="center" /> [Start the "Create applications with the Copilot CLI" Skills Exercise](https://github.com/skills/create-applications-with-the-copilot-cli)
 
 ---
 
@@ -976,7 +990,7 @@ The remaining chapters cover additional features that extend Copilot CLI's capab
 
 ## Continue to Additional Topics
 
-In **[Chapter 04: Agents and Custom Instructions](../04-agents-and-custom-instructions/)**, you'll learn:
+In **[Chapter 04: Agents and Custom Instructions](../04-agents-custom-instructions/README.md)**, you'll learn:
 
 - Using built-in agents (`/plan`, `/review`)
 - Creating specialized agents (frontend expert, security auditor) with `.agent.md` files
@@ -984,3 +998,5 @@ In **[Chapter 04: Agents and Custom Instructions](../04-agents-and-custom-instru
 - Custom instruction files for project standards
 
 ---
+
+**[← Back to Chapter 02](../02-context-conversations/README.md)** | **[Continue to Chapter 04 →](../04-agents-custom-instructions/README.md)**
