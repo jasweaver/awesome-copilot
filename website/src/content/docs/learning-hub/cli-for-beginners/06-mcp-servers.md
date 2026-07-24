@@ -3,7 +3,7 @@ title: '06 · Connect to GitHub, Databases & APIs'
 description: 'Mirror the source chapter on MCP servers and external integrations for GitHub Copilot CLI.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-10
+lastUpdated: 2026-07-24
 ---
 
 ![Chapter 06: MCP Servers](/images/learning-hub/copilot-cli-for-beginners/06/chapter-header.png)
@@ -83,7 +83,7 @@ MCP Servers:
 
 > 💡 **Only seeing the GitHub server?** That's expected! If you haven't added any additional MCP servers yet, GitHub is the only one listed. You'll add more in the next section.
 
-> 📚 **Want to see all `/mcp` commands?** There are additional commands for adding, editing, enabling, and deleting servers. See the [full command reference](#-additional-mcp-commands) at the end of this chapter.
+> 📚 **Want to see all MCP management commands?** You can manage servers with `/mcp` slash commands inside chat, or with `copilot mcp` directly from your terminal. See the [full command reference](#-additional-mcp-commands) at the end of this chapter.
 
 <details>
 <summary>🎬 See it in action!</summary>
@@ -127,7 +127,23 @@ MCP makes Copilot aware of your actual development environment.
 
 <img src="/images/learning-hub/copilot-cli-for-beginners/06/configuring-mcp-servers.png" alt="Hands adjusting knobs and sliders on a professional audio mixing board representing MCP server configuration" width="800"/>
 
-Now that you've seen MCP in action, let's set up additional servers. This section covers the configuration file format and how to add new servers.
+Now that you've seen MCP in action, let's set up additional servers. You can add servers in two ways: **from the built-in registry** (easiest — guided setup right in the CLI) or by **editing the config file** manually (more flexible). Start with the registry option if you're not sure which to choose.
+
+---
+
+## Installing MCP Servers from the Registry
+
+The CLI has a built-in MCP server registry that lets you discover and install popular servers with a guided setup — no JSON editing required.
+
+```bash
+copilot
+
+> /mcp search
+```
+
+Copilot opens an interactive picker showing available servers. Select one, and the CLI walks you through any required configuration (API keys, paths, etc.) and adds it to your config automatically.
+
+> 💡 **Why use the registry?** It's the easiest way to get started — you don't need to know the npm package name, command arguments, or JSON structure. The CLI handles all of that for you.
 
 ---
 
@@ -310,7 +326,7 @@ copilot
 
 Want to connect Copilot to your own APIs, databases, or internal tools? You can build a custom MCP server in Python. This is completely optional since the pre-built servers (GitHub, filesystem, Context7) cover most use cases.
 
-📖 See the [Custom MCP Server Guide](https://github.com/github/copilot-cli-for-beginners/blob/main/06-mcp-servers/mcp-custom-server.md) for a complete walkthrough using the book app as an example.
+📖 See the [Custom MCP Server Guide](mcp-custom-server.md) for a complete walkthrough using the book app as an example.
 
 📚 For more background, see the [MCP for Beginners course](https://github.com/microsoft/mcp-for-beginners).
 
@@ -517,7 +533,7 @@ Best practices:
 
 ### Beyond the Basics
 
-**Custom MCP Server**: If you built the book-lookup server from the [Custom MCP Server Guide](https://github.com/github/copilot-cli-for-beginners/blob/main/06-mcp-servers/mcp-custom-server.md), you can query your book collection directly:
+**Custom MCP Server**: If you built the book-lookup server from the [Custom MCP Server Guide](mcp-custom-server.md), you can query your book collection directly:
 
 ```bash
 copilot
@@ -701,7 +717,7 @@ Recommendations:
 
 # Practice
 
-<img src="/images/learning-hub/copilot-cli-for-beginners/06/practice.png" alt="Warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice" width="800"/>
+<img src="../assets/practice.png" alt="Warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice" width="800"/>
 
 **🎉 You now know the essentials!** You understand MCP, you've seen how to configure servers, and you've seen real workflows in action. Now it's time to try it yourself.
 
@@ -838,7 +854,7 @@ The tests in `test_books.py` cover: `add_book`, `mark_as_read`, `remove_book`, `
 
 ### Bonus Challenge: Build a Custom MCP Server
 
-Ready to go deeper? Follow the [Custom MCP Server Guide](https://github.com/github/copilot-cli-for-beginners/blob/main/06-mcp-servers/mcp-custom-server.md) to build your own MCP server in Python that connects to any API.
+Ready to go deeper? Follow the [Custom MCP Server Guide](mcp-custom-server.md) to build your own MCP server in Python that connects to any API.
 
 ---
 
@@ -850,7 +866,7 @@ Ready to go deeper? Follow the [Custom MCP Server Guide](https://github.com/gith
 | Mistake | What Happens | Fix |
 |---------|--------------|-----|
 | Not knowing GitHub MCP is built-in | Trying to install/configure it manually | GitHub MCP is included by default. Just try: "List the recent commits in this repo" |
-| Looking for config in wrong location | Can't find or edit MCP settings | User-level config is in `~/.copilot/mcp-config.json`, project-level is `.mcp.json` or `.github/mcp.json` |
+| Looking for config in wrong location | Can't find or edit MCP settings | User-level config is in `~/.copilot/mcp-config.json`, project-level is `.mcp.json` in the project root |
 | Invalid JSON in config file | MCP servers fail to load | Use `/mcp show` to check configuration; validate JSON syntax |
 | Forgetting to authenticate MCP servers | "Authentication failed" errors | Some MCPs need separate auth. Check each server's requirements |
 
@@ -893,10 +909,14 @@ If a server is disabled, see the [additional `/mcp` commands](#-additional-mcp-c
 ---
 
 <details>
-<summary>📚 <strong>Additional <code>/mcp</code> Commands</strong> (click to expand)</summary>
+<summary>📚 <strong>Additional MCP Commands</strong> (click to expand)</summary>
 <a id="-additional-mcp-commands"></a>
 
-Beyond `/mcp show`, there are several other commands for managing your MCP servers:
+You can manage MCP servers in two ways: using **slash commands inside a chat session**, or using the **`copilot mcp` command directly in your terminal** (no chat session needed).
+
+### Option 1: Slash commands (inside a chat session)
+
+These work when you're already inside `copilot`:
 
 | Command | What It Does |
 |---------|--------------|
@@ -908,6 +928,23 @@ Beyond `/mcp show`, there are several other commands for managing your MCP serve
 | `/mcp disable <server-name>` | Disable a server (persists across sessions) |
 | `/mcp delete <server-name>` | Remove a server permanently |
 | `/mcp auth <server-name>` | Re-authenticate with an MCP server that uses OAuth (e.g., after switching accounts) |
+
+### Option 2: `copilot mcp` command (from your terminal)
+
+You can also manage MCP servers directly from your terminal without starting a chat session first:
+
+```bash
+# List all configured MCP servers
+copilot mcp list
+
+# Enable a server
+copilot mcp enable filesystem
+
+# Disable a server
+copilot mcp disable context7
+```
+
+> 💡 **When to use which?** Use `/mcp` slash commands when you're already in a chat session. Use `copilot mcp` from the terminal when you want to quickly check or change your server settings before starting a session.
 
 For most of this course, `/mcp show` is all you need. The other commands become useful as you manage more servers over time.
 
@@ -923,7 +960,7 @@ For most of this course, `/mcp show` is all you need. The other commands become 
 2. **GitHub MCP is built-in** - no configuration needed, just `/login`
 3. **Filesystem and Context7** are configured via `~/.copilot/mcp-config.json`
 4. **Multi-server workflows** combine data from multiple sources in a single session
-5. **Check server status** with `/mcp show` (additional commands available for managing servers)
+5. **Manage servers two ways**: use `/mcp` slash commands inside chat, or `copilot mcp` from the terminal
 6. **Custom servers** let you connect any API (optional, covered in the appendix guide)
 
 > 📋 **Quick Reference**: See the [GitHub Copilot CLI command reference](https://docs.github.com/en/copilot/reference/cli-command-reference) for a complete list of commands and shortcuts.
@@ -934,7 +971,7 @@ For most of this course, `/mcp show` is all you need. The other commands become 
 
 You now have all the building blocks: modes, context, workflows, agents, skills, and MCP. Time to put them all together.
 
-In **[Chapter 07: Putting It All Together](../07-putting-it-all-together/)**, you'll learn:
+In **[Chapter 07: Putting It All Together](../07-putting-it-together/README.md)**, you'll learn:
 
 - Combining agents, skills, and MCP in unified workflows
 - Complete feature development from idea to merged PR
@@ -942,3 +979,5 @@ In **[Chapter 07: Putting It All Together](../07-putting-it-all-together/)**, yo
 - Best practices for team environments
 
 ---
+
+**[← Back to Chapter 05](../05-skills/README.md)** | **[Continue to Chapter 07 →](../07-putting-it-together/README.md)**

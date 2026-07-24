@@ -3,7 +3,7 @@ title: '04 · Create Specialized AI Assistants'
 description: 'Mirror the source chapter on custom agents and custom instructions for GitHub Copilot CLI.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-10
+lastUpdated: 2026-07-24
 ---
 
 ![Chapter 04: Agents and Custom Instructions](/images/learning-hub/copilot-cli-for-beginners/04/chapter-header.png)
@@ -192,6 +192,8 @@ copilot --agent python-reviewer
 ```
 
 > 💡 **Switching agents**: You can switch to a different agent at any time by using `/agent` or `--agent` again. To return to the standard Copilot CLI experience, use `/agent` and select **no agent**.
+
+> 💡 **Agent mode is session-scoped**: The agent you select applies only to the current session. When you start a new session with `/new`, `/clear`, or by opening a fresh terminal, Copilot returns to its default mode — your agent selection does not carry over automatically. This means each session starts with a clean slate, which is a good habit to keep your work focused.
 
 ---
 
@@ -437,7 +439,7 @@ Copilot will scan your project and create tailored instruction files. You can ed
 
 ### AGENTS.md
 
-`AGENTS.md` is the recommended format. It's an [open standard](https://agents.md/) that works across Copilot and other AI coding tools. Place it in your repository root and Copilot reads it automatically. This project's own [AGENTS.md](https://github.com/github/copilot-cli-for-beginners/blob/main/AGENTS.md) is a working example.
+`AGENTS.md` is the recommended format. It's an [open standard](https://agents.md/) that works across Copilot and other AI coding tools. Place it in your repository root and Copilot reads it automatically. This project's own [AGENTS.md](../AGENTS.md) is a working example.
 
 A typical `AGENTS.md` describes your project context, code style, security requirements, and testing standards. Write your own following the pattern in our example file.
 
@@ -454,6 +456,48 @@ For teams that want more granular control, split instructions into topic-specifi
 ```
 
 > 💡 **Note**: Instruction files work with any language. This example uses Python to match our course project, but you can create similar files for TypeScript, Go, Rust, or any technology your team uses.
+
+#### Scoping Instructions with `applyTo`
+
+By default, an instruction file applies to every conversation. To limit it to specific file types, add an `applyTo` field in YAML frontmatter (the block between `---` markers at the very top of the file):
+
+```markdown
+---
+applyTo: "**/*.py"
+---
+# Python Standards
+Always follow PEP 8 style conventions.
+Use type hints in all function signatures.
+```
+
+With `applyTo: "**/*.py"`, Copilot only loads that instruction file when you are working with Python files. Instructions for Python style never clutter a conversation about, say, a Dockerfile or a SQL query.
+
+Here are some common patterns:
+
+| `applyTo` value | When it applies |
+|---|---|
+| `"**/*.py"` | Any Python file |
+| `"**/*.{ts,tsx}"` | TypeScript and TSX files |
+| `"tests/**"` | Any file inside a `tests/` folder |
+| (no frontmatter) | Every conversation — the default |
+
+> 💡 **Tip**: Wrap the glob pattern in quotes (e.g., `"**/*.py"`) to ensure it is interpreted correctly across all operating systems and shells.
+
+#### Importing Other Files with `@`
+
+You can reference another file inside `AGENTS.md` or any instruction file using `@filepath` syntax. Copilot expands the reference and includes that file's content automatically, so you can keep your main file short while storing the details elsewhere:
+
+```markdown
+<!-- AGENTS.md -->
+# Project Instructions
+
+@.github/instructions/python-standards.instructions.md
+@.github/instructions/test-standards.instructions.md
+```
+
+This is handy when your instructions grow large. Split them into focused files and `@`-import them from a single `AGENTS.md`. The same syntax works inside `.github/copilot-instructions.md` and other instruction files too.
+
+> 💡 **Tip**: Use `@`-imports to share a common base file across multiple instruction files. For example, you could have a `@.github/instructions/shared-rules.md` that every other instruction file pulls in.
 
 **Finding community instruction files**: Browse [github/awesome-copilot](https://github.com/github/awesome-copilot) for pre-made instruction files covering .NET, Angular, Azure, Python, Docker, and many more technologies.
 
@@ -536,9 +580,9 @@ Use these names in the `tools` list:
 > 💡 **Note for beginners**: The examples below are templates. **Replace the specific technologies with whatever your project uses.** The important thing is the *structure* of the agent, not the specific technologies mentioned.
 
 This project includes working examples in the [.github/agents/](https://github.com/github/copilot-cli-for-beginners/tree/main/.github/agents/) folder:
-- [hello-world.agent.md](https://github.com/github/copilot-cli-for-beginners/blob/main/.github/agents/hello-world.agent.md) - Minimal example, start here
+- [hello-world.agent.md](../.github/agents/hello-world.agent.md) - Minimal example, start here
 - [python-reviewer.agent.md](https://github.com/github/copilot-cli-for-beginners/blob/main/.github/agents/python-reviewer.agent.md) - Python code quality reviewer
-- [pytest-helper.agent.md](https://github.com/github/copilot-cli-for-beginners/blob/main/.github/agents/pytest-helper.agent.md) - Pytest testing specialist
+- [pytest-helper.agent.md](../.github/agents/pytest-helper.agent.md) - Pytest testing specialist
 
 For community agents, see [github/awesome-copilot](https://github.com/github/awesome-copilot).
 
@@ -548,7 +592,7 @@ For community agents, see [github/awesome-copilot](https://github.com/github/awe
 
 # Practice
 
-<img src="/images/learning-hub/copilot-cli-for-beginners/04/practice.png" alt="Warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice" width="800"/>
+<img src="../assets/practice.png" alt="Warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice" width="800"/>
 
 Create your own agents and see them in action.
 
@@ -779,7 +823,7 @@ copilot  # This loads custom instructions by default
 
 Agents change *how Copilot approaches and takes targeted actions* in your code. Next, you'll learn about **skills** - which change *what steps* it follows. Wondering how agents and skills differ? Chapter 05 covers that head-on.
 
-In **[Chapter 05: Skills System](../05-skills/)**, you'll learn:
+In **[Chapter 05: Skills System](../05-skills/README.md)**, you'll learn:
 
 - How skills auto-trigger from your prompts (no slash command needed)
 - Installing community skills
@@ -788,3 +832,5 @@ In **[Chapter 05: Skills System](../05-skills/)**, you'll learn:
 - When to use each one
 
 ---
+
+**[← Back to Chapter 03](../03-development-workflows/README.md)** | **[Continue to Chapter 05 →](../05-skills/README.md)**

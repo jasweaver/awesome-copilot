@@ -3,14 +3,14 @@ title: '05 · Automate Repetitive Tasks'
 description: 'Mirror the source chapter on skills that load automatically for repeated GitHub Copilot CLI workflows.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-03
+lastUpdated: 2026-07-24
 ---
 
 ![Chapter 05: Skills System](/images/learning-hub/copilot-cli-for-beginners/05/chapter-header.png)
 
 > **What if Copilot could automatically apply your team's best practices without you having to explain them every time?**
 
-In this chapter, you'll learn about Agent Skills: folders of instructions that Copilot automatically loads when relevant to your task. While agents change *how* Copilot thinks, skills teach Copilot *specific ways to complete tasks*. You'll create a security audit skill that Copilot applies whenever you ask about security, build team-standard review criteria that ensure consistent code quality, and learn how skills work across Copilot CLI, VS Code, and the Copilot coding agent.
+In this chapter, you'll learn about Agent Skills: folders of instructions that Copilot automatically loads when relevant to your task. While agents change *how* Copilot thinks, skills teach Copilot *specific ways to complete tasks*. You'll create a security audit skill that Copilot applies whenever you ask about security, build team-standard review criteria that ensure consistent code quality, and learn how skills work across Copilot CLI, VS Code, and the GitHub Copilot cloud agent.
 
 
 ## 🎯 Learning Objectives
@@ -62,7 +62,9 @@ Learn what skills are, why they matter, and how they differ from agents and MCP.
    copilot
    > /skills list
    ```
-   This shows all skills Copilot can find in your project and personal folders.
+   This shows all skills Copilot can find, including any **built-in skills** that ship with the CLI itself, plus skills from your project and personal folders.
+
+   > 💡 **Built-in skills**: The Copilot CLI comes with skills pre-installed out of the box. For example, the `customizing-copilot-cloud-agents-environment` skill provides a guide for customizing the Copilot cloud agent's environment. You don't need to create or install anything to use these. Run `/skills list` to see what's available.
 
 2. **Look at a real skill file:** Check out our provided [code-checklist SKILL.md](https://github.com/github/copilot-cli-for-beginners/blob/main/.github/skills/code-checklist/SKILL.md) to see the pattern. It's just YAML frontmatter plus markdown instructions.
 
@@ -141,7 +143,7 @@ You can ask Copilot directly:
 
 Skills are just one piece of GitHub Copilot's extensibility model. Here's how they compare to agents and MCP servers.
 
-> *Don't worry about MCP quite yet. We'll cover it in [Chapter 06](../06-mcp-servers/). It's included here so you can see how skills fit into the overall picture.*
+> *Don't worry about MCP quite yet. We'll cover it in [Chapter 06](/docs/learning-hub/cli-for-beginners/06-mcp-servers/). It's included here so you can see how skills fit into the overall picture.*
 
 <img src="/images/learning-hub/copilot-cli-for-beginners/05/skills-agents-mcp-comparison.png" alt="Comparison diagram showing the differences between Agents, Skills, and MCP Servers and how they combine into your workflow" width="800"/>
 
@@ -601,7 +603,13 @@ copilot
 # Install a plugin from the marketplace
 ```
 
-Plugins can bundle multiple capabilities together - a single plugin might include related skills, agents, and MCP server configurations that work together.
+To keep your local plugin catalog current, refresh it with:
+
+```bash
+copilot plugin marketplace update
+```
+
+Plugins can bundle multiple capabilities together. A single plugin might include related skills, agents, and MCP server configurations that work together.
 
 ### Community Skill Repositories
 
@@ -609,28 +617,28 @@ Pre-made skills are also available from community repositories:
 
 - **[Awesome Copilot](https://github.com/github/awesome-copilot)** - Official GitHub Copilot resources including skills documentation and examples
 
-### Installing a Community Skill Manually
+### Installing a Community Skill with GitHub CLI
 
-If you find a skill in a GitHub repository, copy its folder into your skills directory:
+The easiest way to install a skill from a GitHub repository is using the `gh skill install` command (requires [GitHub CLI v2.90.0+](https://github.blog/changelog/2026-04-16-manage-agent-skills-with-github-cli/)):
 
 ```bash
-# Clone the awesome-copilot repository
-git clone https://github.com/github/awesome-copilot.git /tmp/awesome-copilot
+# Browse and interactively select a skill from awesome-copilot
+gh skill install github/awesome-copilot
 
-# Copy a specific skill to your project
-cp -r /tmp/awesome-copilot/skills/code-checklist .github/skills/
+# Or install a specific skill directly
+gh skill install github/awesome-copilot ai-ready
 
-# Or for personal use across all projects
-cp -r /tmp/awesome-copilot/skills/code-checklist ~/.copilot/skills/
+# Install for personal use across all projects (user scope)
+gh skill install github/awesome-copilot ai-ready --scope user
 ```
 
-> ⚠️ **Review before installing**: Always read a skill's `SKILL.md` before copying it into your project. Skills control what Copilot does, and a malicious skill could instruct it to run harmful commands or modify code in unexpected ways.
+> ⚠️ **Review before installing**: Always read a skill's `SKILL.md` before installing it. Skills control what Copilot does, and a malicious skill could instruct it to run harmful commands or modify code in unexpected ways.
 
 ---
 
 # Practice
 
-<img src="/images/learning-hub/copilot-cli-for-beginners/05/practice.png" alt="Warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice" width="800"/>
+<img src="../assets/practice.png" alt="Warm desk setup with monitor showing code, lamp, coffee cup, and headphones ready for hands-on practice" width="800"/>
 
 Apply what you've learned by building and testing your own skills.
 
@@ -640,7 +648,7 @@ Apply what you've learned by building and testing your own skills.
 
 ### Build More Skills
 
-Here are two more skills showing different patterns. Follow the same `mkdir` + `cat` workflow from "Creating Your First Skill" above or copy and paste the skills into the proper location. More examples are available in [.github/skills](https://github.com/github/copilot-cli-for-beginners/tree/main/.github/skills).
+Here are two more skills showing different patterns. Follow the same `mkdir` + `cat` workflow from "Creating Your First Skill" above or copy and paste the skills into the proper location. More examples are available in [.github/skills](../.github/skills).
 
 ### pytest Test Generation Skill
 
@@ -910,7 +918,7 @@ Run `/skills reload` after creating or editing skills to ensure changes are pick
 
 Skills extend what Copilot can do with auto-loaded instructions. But what about connecting to external services? That's where MCP comes in.
 
-In **[Chapter 06: MCP Servers](../06-mcp-servers/)**, you'll learn:
+In **[Chapter 06: MCP Servers](../06-mcp-servers/README.md)**, you'll learn:
 
 - What MCP (Model Context Protocol) is
 - Connecting to GitHub, filesystem, and documentation services
@@ -918,3 +926,5 @@ In **[Chapter 06: MCP Servers](../06-mcp-servers/)**, you'll learn:
 - Multi-server workflows
 
 ---
+
+**[← Back to Chapter 04](../04-agents-custom-instructions/README.md)** | **[Continue to Chapter 06 →](../06-mcp-servers/README.md)**
