@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-26
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -73,6 +73,8 @@ The `plugin.json` manifest declares what the plugin contains:
   ]
 }
 ```
+
+> **Open Plugin Spec v1 *(v1.0.74+)***: Copilot CLI now also supports **Open Plugin Spec v1** manifests alongside the native `plugin.json` format. This means plugins authored with other compatible tools (such as Claude Code) can be installed in Copilot CLI without any conversion. Additionally, if your plugin's root contains an `mcp.json` file, Copilot CLI will automatically read it as an MCP server configuration — you no longer need to duplicate MCP settings inside `plugin.json`.
 
 ## Why Use Plugins?
 
@@ -221,6 +223,42 @@ copilot plugin marketplace update
 # Remove a plugin
 copilot plugin uninstall my-plugin
 ```
+
+### Installing Skills Directly *(v1.0.72+)*
+
+In addition to full plugin packages, you can install individual skills directly from the CLI without going through a marketplace:
+
+```bash
+# Install a skill from a local file or directory
+copilot plugins install --skill ./my-skill/
+
+# Install a skill from a URL
+copilot plugins install --skill https://example.com/my-skill.md
+
+# Install into the current repository instead of globally
+copilot plugins install --skill ./my-skill/ --scope project
+```
+
+Skills installed this way are available immediately, just like skills that arrive as part of a plugin. Use `--scope project` to install into `.github/skills/` for the current repository, making the skill available to everyone on the team.
+
+To remove a skill installed this way:
+
+```bash
+copilot plugins remove --skill my-skill
+```
+
+### Managing Plugins, MCP Servers, and Skills via /plugins *(v1.0.72+)*
+
+The `/plugins` interactive command now supports the full lifecycle for plugins, MCP servers, and skills in a single place:
+
+```
+/plugins update my-plugin        # update a plugin
+/plugins uninstall my-plugin     # remove a plugin
+/plugins enable --mcp my-server  # enable an MCP server via plugin flag
+/plugins disable --skill my-skill  # disable a skill
+```
+
+You can also target plugins, MCP servers, or skills using the `--plugin`, `--mcp`, and `--skill` flags with `enable`, `disable`, and `remove` verbs.
 
 ### Loading Plugins from a Local Directory
 
