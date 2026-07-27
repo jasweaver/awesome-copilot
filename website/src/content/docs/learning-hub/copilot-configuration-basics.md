@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-27
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -467,6 +467,24 @@ The settings dialog supports search — type to filter settings by name. Changes
 /model --repo       # view/edit the model pinned for this repository
 /model --local      # view/edit your personal model preference
 ```
+
+*(v1.0.72+)* Use `/model --session` (or `/model -s`) to change the model, reasoning effort, or context window for **just the current session**, leaving global and repository settings unchanged. This is useful when you want to try a different model for a specific task without affecting other sessions:
+
+```
+/model --session                       # open the picker scoped to this session
+/model --session claude-opus-4-5       # switch this session to Claude Opus 4.5
+/model --session off                   # clear the session-level model override
+```
+
+*(v1.0.74+)* Use `/model plan` (or `/model --plan`) to select a model specifically for **plan mode**. When you enter plan mode, the CLI switches to this model automatically and reverts to the session model when you leave:
+
+```
+/model plan                  # open the picker to choose a plan-mode model
+/model --plan gpt-4o         # set gpt-4o as the plan-mode model
+/model --plan off            # clear the plan-mode model override
+```
+
+This is useful when you prefer a different model for planning and reasoning than for execution—for example, using a high-reasoning model during plan review and a faster model for implementation.
 
 These flags mirror the **Repo** and **Repo (local)** scope tabs available in the `/settings` dashboard (v1.0.71+), making it easier to manage per-repository vs. user-global configuration without ambiguity. In v1.0.71+, the `/settings` dashboard also shows **Repo** and **Repo (local)** tabs alongside the existing user-level view, giving you a unified place to see which settings are applied at each layer.
 
