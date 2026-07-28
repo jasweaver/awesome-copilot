@@ -3,7 +3,7 @@ title: 'Agents and Subagents'
 description: 'Learn how delegated subagents differ from primary agents, when to use them, and how to launch them in VS Code and Copilot CLI.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-01
+lastUpdated: 2026-07-28
 estimatedReadingTime: '9 minutes'
 tags:
   - agents
@@ -211,6 +211,10 @@ No. They can run sequentially when one step depends on another, or in parallel w
 **Can I control how many subagents run simultaneously?**
 
 Yes. In v1.0.66+, usage-based billing users can configure **subagent concurrency and depth limits** directly from `/settings`. The concurrency limit controls how many subagents run in parallel; the depth limit controls how many levels deep delegation can chain (preventing runaway recursive subagent trees). These settings give you predictable control over resource consumption during complex orchestrated tasks.
+
+**Are multi-turn subagents available by default?**
+
+Yes. As of v1.0.74, multi-turn subagents are always enabled — you can send follow-up messages to running subagents in `/tasks` without any configuration. Their timelines now show every prompt and response in the correct order after reopening, and the timeline identifies whether each prompt came from the main agent or another subagent, making it easier to trace complex orchestrations.
 
 ## Next steps
 
