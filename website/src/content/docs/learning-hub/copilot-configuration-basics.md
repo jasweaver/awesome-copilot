@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-29
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -449,6 +449,8 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
 
+**Recently added models** *(v1.0.74–v1.0.75)*: The model picker now includes **Claude Opus 5** (`claude-opus-5`, v1.0.75) and **Gemini 3.6 Flash** (`gemini-3.6-flash`, v1.0.74). Claude Opus 5 is Anthropic's most capable model, suited for complex reasoning tasks. Gemini 3.6 Flash is a fast, cost-efficient option from Google.
+
 ### CLI Session Commands
 
 The `/settings` command (v1.0.61+) opens an interactive dialog to browse and edit all user settings in one place. Use it to discover available settings, toggle options, and update values without manually editing your config file:
@@ -469,6 +471,16 @@ The settings dialog supports search — type to filter settings by name. Changes
 ```
 
 These flags mirror the **Repo** and **Repo (local)** scope tabs available in the `/settings` dashboard (v1.0.71+), making it easier to manage per-repository vs. user-global configuration without ambiguity. In v1.0.71+, the `/settings` dashboard also shows **Repo** and **Repo (local)** tabs alongside the existing user-level view, giving you a unified place to see which settings are applied at each layer.
+
+**Picking a model for plan mode** *(v1.0.74+)*: Use `/model plan` (or `/model --plan`) to choose a dedicated model for plan mode sessions — separate from the model used in regular interactive mode:
+
+```
+/model plan                    # open the model picker for plan mode
+/model plan claude-opus-5      # set Claude Opus 5 as the plan mode model
+/model plan off                # clear the plan mode model (fall back to the session model)
+```
+
+This lets you use a more powerful (or more cost-effective) model specifically for planning tasks, without changing your default session model. The plan mode model reverts to the session model when you leave plan mode.
 
 GitHub Copilot CLI has two commands for managing session state, with distinct behaviours:
 
