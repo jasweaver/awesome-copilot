@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-30
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -428,7 +428,9 @@ CLI settings use **camelCase** naming. Key settings added in recent releases:
 | `continueOnAutoMode` | Automatically switch to the auto model on rate limit instead of pausing |
 | `proxy` | HTTP(S) proxy URL for all outbound CLI requests (e.g., `http://proxy.example.com:8080`) (v1.0.64+) |
 | `sessionLimits` | Restrict credit or turn usage for a session; limits apply across the current conversation and reset on `/clear` (v1.0.66+) |
-| `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+) |
+| `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode. As of v1.0.76, this defaults to `true` — set it to `false` to return to interactive mode after each `task_complete` (v1.0.69+) |
+
+> **`/limits predict` (v1.0.76+)**: Use `/limits predict` to get an AI-suggested session credit limit based on the cost profile of similar past sessions. This helps you set realistic limits before starting long-running tasks without having to guess.
 
 > **Note**: Older snake_case names (e.g., `include_gitignored`, `auto_updates_channel`) are still accepted for backward compatibility, but camelCase is now the preferred format.
 
@@ -506,6 +508,24 @@ The `/session delete` command removes sessions you no longer need:
 You can also press **x** on a highlighted session in the session picker (`--resume`) to delete it directly from the list.
 
 In the session picker, press **`s`** to cycle the sort order: relevance, last used, created, or name. The picker also shows the branch name and idle/in-use status for each session.
+
+### Sessions Sidebar
+
+*(v1.0.76+, experimental)* The **Sessions sidebar** provides a persistent split-view panel for managing multiple concurrent sessions without leaving your current session. Enable it with:
+
+```
+/experimental on
+```
+
+Once experimental mode is active, the Sessions sidebar appears alongside your main session. From the sidebar you can:
+
+- **Switch** between running sessions instantly
+- **Spawn new sessions** without losing your current context
+- **See status at a glance** — which sessions are active, idle, or waiting
+
+The sidebar's hover-to-focus behavior is **off by default** (opt in with the `sidebar.hoverFocus` setting), and the active session card is **accented** by default (opt out with `sidebar.accentActiveSession`).
+
+> **Note**: The Sessions sidebar is currently experimental. Enable it with `/experimental on` and provide feedback as the feature stabilizes.
 
 The `/rewind` command opens a timeline picker that lets you roll back the conversation to any earlier point in history, reverting both the conversation and any file changes made after that point. You can also trigger it by pressing **double-Esc**:
 
@@ -626,6 +646,16 @@ The `/diagnose` command (v1.0.64+) analyzes the current session's logs and surfa
 Use `/diagnose` when a session is behaving unexpectedly — it inspects session logs and reports what it finds, making it easier to share diagnostics with support or understand what happened internally.
 
 **Keyboard shortcuts for queuing messages**: Use **Ctrl+Q** or **Ctrl+Enter** to queue a message (send it while the agent is still working). **Ctrl+D** no longer queues messages — it now has its default terminal behavior. If you have muscle memory for Ctrl+D queuing, switch to Ctrl+Q.
+
+**Directable queue manager** *(v1.0.76+)*: The **queue manager** (also called "staff") gives you fine-grained control over your queued messages. While the agent is working and messages are queued, you can:
+
+- **Reorder** queued messages to reprioritize what the agent does next
+- **Edit** a queued message before it's sent
+- **Remove** a queued message you no longer want to send
+- **Repeat** a message to send it again after the agent finishes
+- **Immediately send** a queued message, jumping it to the front
+
+Use `Ctrl+C` to remove your own newest queued message directly without opening the manager.
 
 **Background running tasks**: Press **Ctrl+X → B** to move the current running task or shell command to the background. The task continues executing while you can type a new message or review earlier output. This is useful for long-running commands where you want to interact with the agent while waiting for the result.
 
