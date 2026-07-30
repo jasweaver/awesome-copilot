@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-30
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -73,6 +73,8 @@ The `plugin.json` manifest declares what the plugin contains:
   ]
 }
 ```
+
+> **Open Plugin Spec v1 (v1.0.74+)**: GitHub Copilot CLI now supports **Open Plugin Spec v1** plugin manifests. This means plugins written to the Open Plugin Spec standard are compatible with Copilot CLI without conversion, broadening interoperability across AI tooling ecosystems.
 
 ## Why Use Plugins?
 
@@ -221,6 +223,20 @@ copilot plugin marketplace update
 # Remove a plugin
 copilot plugin uninstall my-plugin
 ```
+
+### Enabling and Disabling Plugins
+
+*(v1.0.76+)* The `/plugins` command includes **enable/disable toggle controls** for individual plugins, instructions, agents, LSP servers, and hooks without uninstalling them. This lets you temporarily deactivate a plugin (or just its hooks or agents) without losing your configuration:
+
+```
+/plugins
+```
+
+In the `/plugins` dialog, navigate to any installed plugin and toggle its components on or off. This is useful when:
+
+- **Debugging conflicts**: Temporarily disable a plugin to isolate whether it's causing unexpected behavior
+- **Context switching**: Turn off domain-specific agents when switching to a different kind of task
+- **Selective activation**: Keep a plugin installed but disable only its hooks while keeping its agents active
 
 ### Loading Plugins from a Local Directory
 
