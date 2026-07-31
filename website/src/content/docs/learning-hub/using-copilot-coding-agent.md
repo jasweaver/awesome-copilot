@@ -3,7 +3,7 @@ title: 'Using the Copilot Coding Agent'
 description: 'Learn how to use GitHub Copilot coding agent to autonomously work on issues, generate pull requests, and automate development tasks.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-05-13
+lastUpdated: 2026-07-31
 estimatedReadingTime: '12 minutes'
 tags:
   - coding-agent
@@ -388,6 +388,14 @@ Hooks are especially valuable with the coding agent because they provide determi
 - **`sessionEnd`**: Send notifications when the agent finishes
 
 See [Automating with Hooks](../automating-with-hooks/) for configuration details.
+
+## Assisted Tool Approvals (VS Code 1.130+)
+
+Long-running coding agent tasks in VS Code can involve dozens of tool calls — and repeated approval prompts interrupt the flow. **Assisted tool approvals** reduce this friction by having the language model evaluate the risk of each tool call and decide whether it can run automatically or needs your explicit approval.
+
+To enable it, turn on `setting(chat.assistedPermissions.enabled)` (requires the agent host — `setting(chat.agentHost.enabled)`). Once active, you'll see an **Assisted permissions** option in the permissions picker for agents running on the agent host.
+
+This works similarly to a senior reviewer skimming a PR: low-risk tool calls (reading files, searching code) proceed automatically, while higher-risk operations (writing files, running commands) still prompt for approval. The result is fewer interruptions without sacrificing oversight.
 
 ## Best Practices
 
