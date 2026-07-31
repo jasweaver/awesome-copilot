@@ -3,7 +3,7 @@ title: '01 · First Steps'
 description: 'Experience your first GitHub Copilot CLI demos and learn the three main interaction modes.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-19
+lastUpdated: 2026-07-31
 ---
 
 ![Chapter 01: First Steps](/images/learning-hub/copilot-cli-for-beginners/01/chapter-header.png)
@@ -316,7 +316,7 @@ Step 4: Test the flow
 Proceed with implementation? [Y/n]
 ```
 
-**Key insight**: Plan mode lets you review and modify the approach before any code is written. Once a plan is complete, you can even tell Copilot CLI to save it to a file for later reference. For example, "Save this plan to `mark_as_read_plan.md`" would create a markdown file with the plan details.
+**Key insight**: Plan mode lets you review and modify the approach before any code is written. While in plan mode, Copilot CLI is **read-only** and will not edit any files or run commands that change your workspace until you approve and move to implementation. This keeps you safely in the "thinking" stage until you're ready. Once a plan is complete, you can even tell Copilot CLI to save it to a file for later reference. For example, "Save this plan to `mark_as_read_plan.md`" would create a markdown file with the plan details.
 
 > 💡 **Want something more complex?** Try: `/plan Add search and filter capabilities to the book app`. Plan mode scales from simple features to full applications.
 
@@ -475,6 +475,10 @@ copilot
 ```
 
 > 💡 **Tip**: Some models cost more "premium requests" than others. Models marked **1x** (like Claude Sonnet 4.5) are a great default. They're capable and efficient. Higher-multiplier models use your premium request quota faster, so save those for when you really need them.
+
+> 💡 **Not sure which model to pick?** Select **`Auto`** from the model picker to let Copilot automatically choose the best available model for each session. This is a great default if you're just getting started and don't want to think about model selection.
+
+> 💡 **Model family shortcuts**: You can also type a short family alias — like `opus`, `sonnet`, `haiku`, `gpt`, or `gemini` — directly in the `/model` picker instead of scrolling through the full list. Copilot will pick the best available model in that family for you.
 
 </details>
 
