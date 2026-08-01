@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-01
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -73,6 +73,12 @@ The `plugin.json` manifest declares what the plugin contains:
   ]
 }
 ```
+
+### Open Plugin Spec v1 and mcp.json
+
+*(v1.0.74+)* Copilot CLI also supports the [Open Plugin Spec v1](https://openpluginsec.io/) plugin manifest format alongside the native `plugin.json` format. If you have an existing plugin written for another AI assistant that uses the Open Plugin Spec, it will work in Copilot CLI without modification.
+
+Similarly, Copilot CLI recognizes `mcp.json` configuration files (a community-standard format for declaring MCP server configurations) in addition to its own `.mcp.json` format. This means plugins that bundle MCP server configuration using the `mcp.json` convention are automatically compatible.
 
 ## Why Use Plugins?
 
@@ -204,6 +210,23 @@ Or from an interactive session:
 
 Browse to the plugin via `@agentPlugins` in the Extensions search view or via **Chat: Plugins** in the Command Palette, then click **Install**.
 
+### Installing Skills Directly
+
+*(v1.0.72+)* You can install individual skills without a full plugin using `--skill`:
+
+```bash
+# Install a skill from a local directory
+copilot plugins install --skill ./my-skill/
+
+# Install a skill from a URL
+copilot plugins install --skill https://example.com/my-skill.zip
+
+# Install a skill into the current repository (project scope)
+copilot plugins install --skill ./my-skill/ --scope project
+```
+
+Skills installed this way are available immediately and appear in the skill picker and `copilot skill list`.
+
 ## Managing Plugins
 
 Once installed, plugins are managed with a few simple commands:
@@ -220,11 +243,34 @@ copilot plugin marketplace update
 
 # Remove a plugin
 copilot plugin uninstall my-plugin
+
+# Remove an installed skill
+copilot plugins remove --skill my-skill
 ```
 
-### Loading Plugins from a Local Directory
+### Enabling and Disabling Plugin Components
 
-You can load plugins directly from a local directory without installing them from a marketplace, using the `--plugin-dir` flag when starting Copilot:
+*(v1.0.76+)* You can temporarily enable or disable individual components within a plugin without uninstalling it. This is useful when you want to test a plugin or turn off a specific agent or hook without removing the whole package.
+
+From inside a Copilot session:
+
+```
+# Disable a specific plugin (all its components)
+/plugins disable my-plugin
+
+# Re-enable it
+/plugins enable my-plugin
+
+# Disable a specific MCP server from a plugin
+/plugins disable --mcp my-plugin:my-server
+
+# Disable a specific skill from a plugin
+/plugins disable --skill my-plugin:my-skill
+```
+
+Disabled components are hidden from the agent but remain installed on disk, so you can re-enable them at any time. Your current session takes effect immediately without restarting.
+
+### Loading Plugins from a Local Directory
 
 ```bash
 copilot --plugin-dir /path/to/my-plugin
