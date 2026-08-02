@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-02
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -429,6 +429,7 @@ CLI settings use **camelCase** naming. Key settings added in recent releases:
 | `proxy` | HTTP(S) proxy URL for all outbound CLI requests (e.g., `http://proxy.example.com:8080`) (v1.0.64+) |
 | `sessionLimits` | Restrict credit or turn usage for a session; limits apply across the current conversation and reset on `/clear` (v1.0.66+) |
 | `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+) |
+| `allowDevToolCaches` | *(v1.0.78+, default: `true`)* Grants sandboxed builds access to toolchain caches, package registries, and installs so builds work without extra setup. Set to `false` to opt out and enforce a stricter network boundary. |
 
 > **Note**: Older snake_case names (e.g., `include_gitignored`, `auto_updates_channel`) are still accepted for backward compatibility, but camelCase is now the preferred format.
 
@@ -448,6 +449,8 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 **Auto mode and server-side model routing** (v1.0.43+): When you select **Auto** as your model, the CLI uses server-side model routing for real-time model selection. Instead of locking in a single model at session start, Auto mode evaluates each request and routes it to the most appropriate model dynamically. This means straightforward questions can be handled by a faster model while complex reasoning tasks are automatically escalated — without you needing to switch models manually.
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
+
+**grok-4.5** (v1.0.76+): xAI's grok-4.5 model is now available for selection in the model picker. Use `/model` to switch to it or set it as your default in settings.
 
 ### CLI Session Commands
 
@@ -627,6 +630,8 @@ Use `/diagnose` when a session is behaving unexpectedly — it inspects session 
 
 **Keyboard shortcuts for queuing messages**: Use **Ctrl+Q** or **Ctrl+Enter** to queue a message (send it while the agent is still working). **Ctrl+D** no longer queues messages — it now has its default terminal behavior. If you have muscle memory for Ctrl+D queuing, switch to Ctrl+Q.
 
+**Directable queue manager** *(v1.0.76+)*: The message queue is now fully editable. While the agent is working you can open the queue manager to reorder, edit, remove, repeat, or immediately send any queued message — not just append new ones. This is useful for reprioritising tasks mid-run without clearing the entire queue.
+
 **Background running tasks**: Press **Ctrl+X → B** to move the current running task or shell command to the background. The task continues executing while you can type a new message or review earlier output. This is useful for long-running commands where you want to interact with the agent while waiting for the result.
 
 **Shell command history in normal mode** (v1.0.65+): The **↑/↓** arrow keys and **Ctrl+R** reverse search now include past shell commands (commands run with `!`) while you are in normal (non-shell) input mode. Previously you had to type `!` to enter shell mode before history worked. Now you can recall and re-run a shell command without switching modes first — useful for quickly repeating a build, test, or diagnostic command from earlier in the session.
@@ -663,6 +668,12 @@ The `/usage` command displays session metrics such as the number of tokens consu
 
 ```
 /usage
+```
+
+The `/limits predict` command *(v1.0.76+)* analyses your current session and similar past sessions to suggest an appropriate AI-credit limit. This helps you set a `sessionLimits` budget that reflects your typical usage pattern without under- or over-constraining the agent:
+
+```
+/limits predict
 ```
 
 The `/compact` command summarizes the conversation history to free up context window space while preserving the thread of the conversation. Use it when your context is getting full but you do not want to start a fresh session:
@@ -716,6 +727,14 @@ Use `/autopilot` when you want to flip between supervised and unsupervised opera
 > **Auto allow-all mode (v1.0.69+)**: In addition to the standard allow-all mode (which approves everything), the CLI now supports an **auto allow-all** mode that uses an LLM judge to evaluate each tool request. When enabled, the judge automatically approves requests it evaluates as acceptable, and asks you for manual confirmation only for requests it considers risky. This gives you a middle ground between full autopilot and fully supervised operation — most routine actions proceed automatically while unusual or potentially dangerous actions still surface for your review. As of v1.0.69-3, this mode requires experimental features to be enabled — use `/experimental on` or start the CLI with `--experimental` — then activate it with `/allow-all auto`. The previous `AUTO_APPROVAL` environment variable approach has been removed in favour of experimental mode.
 
 > **Read-only `gh` CLI commands (v1.0.46+)**: Read-only `gh` commands — such as `gh issue list`, `gh pr view`, `gh run status`, and other commands that don't write to GitHub — are **automatically approved** without a permission prompt. Only commands that write to GitHub (like creating issues, merging PRs) still require explicit approval. This reduces friction during exploratory sessions where you frequently check issue or PR status.
+
+The `/permissions` command *(v1.0.78+)* is a unified way to switch between approval modes without using `/allow-all` sub-commands. It surfaces all available permission modes in one place:
+
+```
+/permissions          # open the permissions picker
+```
+
+Use `/permissions` when you want to review or switch the current approval mode — interactive, autopilot, auto, or plan — from a single menu rather than typing out the full `/allow-all on|off|auto` commands.
 
 The `--effort` flag (shorthand for `--reasoning-effort`) controls how much computational reasoning the model applies to a request:
 
@@ -808,7 +827,37 @@ echo 'source ~/.copilot-completion.bash' >> ~/.bashrc
 
 > **Tip**: Reload your shell (`source ~/.bashrc` or open a new terminal) after adding the completion script for changes to take effect.
 
-## Common Questions
+### Authentication and Login
+
+The `copilot login` command authenticates you with GitHub. As of **v1.0.77**, the **browser-based (web) OAuth flow** is the default for interactive terminal sessions on local machines. When you run `copilot login`, a browser window opens automatically to complete authentication:
+
+```bash
+copilot login              # uses browser-based flow by default on local terminals
+copilot login --web-flow   # explicitly request browser-based flow
+copilot login --device-code  # use device code flow (default on remote/headless terminals)
+```
+
+The device code flow (where you copy a code and visit a URL on another device) remains the default in remote, SSH, or headless environments where a browser redirect is not possible. You can also switch between flows interactively with the `/login` command inside a session.
+
+**Managed sandbox policy** *(v1.0.77+)*: Enterprise administrators can enforce a sandbox floor via **macOS and Windows native MDM settings** (Mobile Device Management). Managed settings can tighten — but never loosen — the user's sandbox policy. The `/sandbox` dialog surfaces org-configured managed values with locked fields, so administrators can confirm what is enforced and users can see what they cannot override.
+
+### Sessions Sidebar (Experimental)
+
+*(v1.0.76+, requires `/experimental on`)* The **Sessions sidebar** lets you manage multiple concurrent Copilot sessions from a single split-view panel. Switch between sessions, spawn new ones, and see their status at a glance — all without leaving the current session.
+
+Enable the sidebar with experimental mode:
+
+```
+/experimental on
+```
+
+Once enabled, the sidebar appears alongside your active session. Key interactions:
+
+- **Switch sessions**: Click or keyboard-navigate to another session card in the sidebar
+- **Spawn a new session**: Use the new-session button in the sidebar panel
+- **Session status**: Each card shows the session's current state (running, idle, waiting)
+
+Switching between sessions does **not** restart MCP servers or rebuild hook state, so a task running in a background session continues uninterrupted while you work in another.
 
 **Q: How do I disable Copilot for specific files?**
 
