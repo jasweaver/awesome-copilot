@@ -3,7 +3,7 @@ title: 'Agents and Subagents'
 description: 'Learn how delegated subagents differ from primary agents, when to use them, and how to launch them in VS Code and Copilot CLI.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-01
+lastUpdated: 2026-08-03
 estimatedReadingTime: '9 minutes'
 tags:
   - agents
@@ -211,6 +211,16 @@ No. They can run sequentially when one step depends on another, or in parallel w
 **Can I control how many subagents run simultaneously?**
 
 Yes. In v1.0.66+, usage-based billing users can configure **subagent concurrency and depth limits** directly from `/settings`. The concurrency limit controls how many subagents run in parallel; the depth limit controls how many levels deep delegation can chain (preventing runaway recursive subagent trees). These settings give you predictable control over resource consumption during complex orchestrated tasks.
+
+**How do I manage multiple top-level sessions in the CLI?**
+
+*(v1.0.76+)* The Copilot CLI now includes a **Sessions sidebar** for managing multiple concurrent top-level sessions — not just subagents. You can switch between sessions, spawn new ones, and see their status at a glance, all from one terminal window. Enable it with experimental mode:
+
+```
+/experimental on
+```
+
+Once enabled, the Sessions sidebar appears as a split view. Each session has its own context, history, and working state. This is useful for keeping a long-running task in one session while starting a fresh session for a different question or task — without losing your conversation history.
 
 ## Next steps
 
