@@ -3,7 +3,7 @@ title: 'Automating with Hooks'
 description: 'Learn how to use hooks to automate lifecycle events like formatting, linting, and governance checks during Copilot agent sessions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-03
 estimatedReadingTime: '8 minutes'
 tags:
   - hooks
@@ -139,6 +139,8 @@ EOF
 ```
 
 > **How it works**: If your hook writes `{"additionalContext": "..."}` to stdout and exits with code `0`, the text is prepended to the model prompt for this turn. The hook can also write both `additionalContext` and `response` — if `response` is present, that wins and the model call is skipped.
+
+> **Robustness improvements (v1.0.76+)**: Several edge cases in `userPromptSubmitted` hooks have been addressed. Non-string return values for `modifiedPrompt`, `modifiedTransformedPrompt`, or `responseContent` are now safely ignored with a warning instead of corrupting the session. A hook that sets `handled: true` without a usable `responseContent` is diagnosed and falls through to the model rather than silently breaking. A `null` `additionalContext` is treated as absent. Hook output is also bounded at 10 MiB per invocation to prevent memory exhaustion from unbounded HTTP or command responses.
 
 ### Extension Hooks Merging
 
