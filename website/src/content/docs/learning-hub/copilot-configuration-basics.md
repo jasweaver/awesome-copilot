@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-04
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -429,6 +429,7 @@ CLI settings use **camelCase** naming. Key settings added in recent releases:
 | `proxy` | HTTP(S) proxy URL for all outbound CLI requests (e.g., `http://proxy.example.com:8080`) (v1.0.64+) |
 | `sessionLimits` | Restrict credit or turn usage for a session; limits apply across the current conversation and reset on `/clear` (v1.0.66+) |
 | `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+) |
+| `showToolDurations` | Show how long each tool call took in the timeline header, ticking live for calls ≥ 5 s (v1.0.78+, on by default) |
 
 > **Note**: Older snake_case names (e.g., `include_gitignored`, `auto_updates_channel`) are still accepted for backward compatibility, but camelCase is now the preferred format.
 
@@ -507,11 +508,13 @@ You can also press **x** on a highlighted session in the session picker (`--resu
 
 In the session picker, press **`s`** to cycle the sort order: relevance, last used, created, or name. The picker also shows the branch name and idle/in-use status for each session.
 
-The `/rewind` command opens a timeline picker that lets you roll back the conversation to any earlier point in history, reverting both the conversation and any file changes made after that point. You can also trigger it by pressing **double-Esc**:
+The `/rewind` command opens a timeline picker that lets you roll back the conversation to any earlier point in history. You can also trigger it by pressing **double-Esc**:
 
 ```
 /rewind
 ```
+
+When you select a rewind point, the CLI offers a choice between reverting **conversation only** or reverting **conversation and files**. The file revert no longer requires git — it restores only the files Copilot changed, skipping any file whose contents no longer match what Copilot last wrote (so manually edited files are left alone).
 
 Use `/rewind` when you want to branch off from a different point in the conversation, rather than just undoing the most recent turn.
 
@@ -556,6 +559,14 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
+
+The `/new-worktree` command *(v1.0.78+, experimental)* is complementary to `/worktree`: instead of moving your current session into a new worktree, it **starts a fresh conversation** in a new worktree while leaving the current session untouched. This is useful when you want to spin up a parallel agent session on a new branch without interrupting the work you're doing now:
+
+```
+/new-worktree
+```
+
+After running the command, a new session window opens inside the freshly created worktree. Both sessions continue running independently, each in their own branch.
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 
@@ -717,6 +728,14 @@ Use `/autopilot` when you want to flip between supervised and unsupervised opera
 
 > **Read-only `gh` CLI commands (v1.0.46+)**: Read-only `gh` commands — such as `gh issue list`, `gh pr view`, `gh run status`, and other commands that don't write to GitHub — are **automatically approved** without a permission prompt. Only commands that write to GitHub (like creating issues, merging PRs) still require explicit approval. This reduces friction during exploratory sessions where you frequently check issue or PR status.
 
+The `/permissions` command *(v1.0.78+)* is a unified way to switch between approval modes directly from the chat interface, without needing to remember the separate `/allow-all` and `/autopilot` commands:
+
+```
+/permissions        # open the permissions mode picker
+```
+
+Running `/permissions` opens an interactive picker where you can select from the available approval modes (interactive, autopilot, allow-all, auto). Use this as the go-to command for adjusting how much autonomy the agent has in the current session.
+
 The `--effort` flag (shorthand for `--reasoning-effort`) controls how much computational reasoning the model applies to a request:
 
 ```bash
@@ -760,6 +779,14 @@ copilot --no-sandbox -p "Set up development environment with system tools"
 ```
 
 These flags apply only to the current invocation — your persisted sandbox preference remains unchanged.
+
+> **Sandbox bypass is session-scoped (v1.0.78+)**: When the sandbox blocks a shell command and bypass is allowed, the CLI offers to re-run it outside the sandbox. If you accept, the sandbox is disabled **only for that session** — new sessions start sandboxed again. This prevents a one-off bypass from permanently weakening your security posture.
+
+> **`allowDevToolCaches` (v1.0.78+)**: A new sandbox setting, on by default, that grants sandboxed builds access to toolchain caches, package registries, and local tool installs (npm cache, pip cache, Go module cache, etc.). This means most builds work inside the sandbox without any extra configuration. Set `allowDevToolCaches` to `false` in your settings if you want a stricter sandbox that blocks cache access:
+>
+> ```json
+> { "allowDevToolCaches": false }
+> ```
 
 The `--attachment` flag (available in prompt mode, `-p`) lets you attach files — images or native documents — to the initial prompt in non-interactive mode:
 
