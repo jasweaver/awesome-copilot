@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-06
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -223,7 +223,7 @@ The `~/.agents/skills/` path aligns with the VS Code GitHub Copilot for Azure ex
 
 | Field | Description | Example values |
 |-------|-------------|----------------|
-| `model` | The AI model to use for this repository | `"claude-sonnet-4"`, `"gpt-4.1"`, `"claude-sonnet-5"` |
+| `model` | The AI model to use for this repository | `"claude-sonnet-4"`, `"gpt-4.1"`, `"claude-sonnet-5"`, `"grok-4.5"` |
 | `effortLevel` | Reasoning effort level | `"low"`, `"medium"`, `"high"` |
 | `contextTier` | How much context to include | `"default"`, `"full"` |
 
@@ -430,6 +430,8 @@ CLI settings use **camelCase** naming. Key settings added in recent releases:
 | `sessionLimits` | Restrict credit or turn usage for a session; limits apply across the current conversation and reset on `/clear` (v1.0.66+) |
 | `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+) |
 
+*(v1.0.76+)* Use `/limits predict` to get an AI-suggested session credit limit based on similar past sessions. This helps you set a `sessionLimits` budget that's appropriate for the type of work you're doing without guesswork.
+
 > **Note**: Older snake_case names (e.g., `include_gitignored`, `auto_updates_channel`) are still accepted for backward compatibility, but camelCase is now the preferred format.
 
 In addition to the main config file, GitHub Copilot CLI reads two optional per-project files for repository-specific overrides:
@@ -507,6 +509,8 @@ You can also press **x** on a highlighted session in the session picker (`--resu
 
 In the session picker, press **`s`** to cycle the sort order: relevance, last used, created, or name. The picker also shows the branch name and idle/in-use status for each session.
 
+*(v1.0.79+)* The CLI now has a **Sessions tab and sidebar** for managing multiple concurrent sessions without leaving the terminal. The sidebar lets you switch between sessions, spawn new ones, and see each session's status at a glance — all from the terminal UI. It became generally available in v1.0.79 (it was behind `/experimental on` in v1.0.76).
+
 The `/rewind` command opens a timeline picker that lets you roll back the conversation to any earlier point in history, reverting both the conversation and any file changes made after that point. You can also trigger it by pressing **double-Esc**:
 
 ```
@@ -556,6 +560,15 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
+
+*(v1.0.79+)* Use `/worktree new` to start a **new session** inside a new worktree — the current session keeps running and the new worktree session opens immediately. This is distinct from passing a branch name (which moves the current session into a new worktree):
+
+```
+/worktree new                     # create a new worktree and open a new session in it
+/worktree new fix-the-login-bug   # name the worktree branch explicitly
+```
+
+This makes it easy to dispatch a parallel task without interrupting your current work.
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 
@@ -760,6 +773,10 @@ copilot --no-sandbox -p "Set up development environment with system tools"
 ```
 
 These flags apply only to the current invocation — your persisted sandbox preference remains unchanged.
+
+> **Breaking change (v1.0.79+)**: The sandbox setting `allowDevToolCaches` has been **renamed to `allowDevToolAccess`** — it now grants access to dev-tool config and registries as well as caches. The old key is silently ignored (not read), so any existing `false` opt-out reverts to the default (on). **Update `allowDevToolCaches` to `allowDevToolAccess` in your `settings.json` and any managed/MDM policy files.**
+
+*(v1.0.77+)* Enterprise administrators on macOS and Windows can enforce a **managed sandbox policy** via native MDM settings. Managed settings tighten (but never loosen) a user's sandbox configuration; the `/sandbox` dialog surfaces org-configured values with locked fields so administrators can confirm what is enforced.
 
 The `--attachment` flag (available in prompt mode, `-p`) lets you attach files — images or native documents — to the initial prompt in non-interactive mode:
 
