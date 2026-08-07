@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-07
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -449,6 +449,25 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
 
+**Session-scoped model changes** (v1.0.72+): Use `/model --session` (or `/model -s`) to change the model, reasoning effort, or context window for the current session only, without affecting your global settings:
+
+```
+/model --session                  # open the model picker for this session only
+/model --session claude-opus-5    # switch to Claude Opus 5 for this session
+```
+
+When the session ends, your global model preference is restored.
+
+**Plan-mode model** (v1.0.74+): Use `/model plan` (or `/model --plan`) to pick a separate model used while in plan mode. This lets you use a cost-efficient model for planning while reserving a more capable model for execution:
+
+```
+/model plan                       # open model picker for plan mode
+/model plan claude-haiku-4.5      # use Haiku while planning
+/model plan off                   # clear the plan-mode model override
+```
+
+The plan-mode model reverts to the session model when you leave plan mode.
+
 ### CLI Session Commands
 
 The `/settings` command (v1.0.61+) opens an interactive dialog to browse and edit all user settings in one place. Use it to discover available settings, toggle options, and update values without manually editing your config file:
@@ -541,7 +560,7 @@ The `/cd` command changes the working directory for the current session. Since v
 
 This is useful when you have multiple backgrounded sessions each focused on a different project directory.
 
-The `/worktree` command (v1.0.61+, also aliased `/move`) creates a new git worktree and switches into it, moving any uncommitted changes along. This lets you start working on a parallel branch without leaving your current terminal session:
+The `/worktree` command (v1.0.61+) creates a new git worktree and switches into it, **leaving your uncommitted changes behind** in the original working tree. In v1.0.72+, the companion `/move` command carries uncommitted changes into the new worktree instead:
 
 ```
 /worktree my-feature-branch
@@ -555,7 +574,15 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
-After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
+After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins. In v1.0.78+, the experimental `/new-worktree` command provides an alternative way to create a new worktree and open a fresh conversation inside it.
+
+The `/permissions` command *(v1.0.78+)* opens an interactive dialog to switch between approval modes — controlling how much the agent can do without asking for permission:
+
+```
+/permissions
+```
+
+Use this to quickly move between strict (confirm every action), standard, or autopilot modes within the current session, without opening `/settings`.
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 

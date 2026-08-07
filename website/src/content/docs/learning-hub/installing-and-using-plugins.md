@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-07
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -220,6 +220,52 @@ copilot plugin marketplace update
 
 # Remove a plugin
 copilot plugin uninstall my-plugin
+```
+
+### Auto-updating first-party plugins
+
+*(v1.0.78+)* First-party plugins (those from the official `copilot-plugins` marketplace) automatically update to their latest version each time a Copilot CLI session starts. This keeps your official tooling current without requiring manual `plugin update` calls.
+
+### Enabling and disabling components
+
+*(v1.0.76+)* You can enable or disable individual plugins, agents, skills, MCP servers, hooks, and LSP servers without uninstalling them. Use `/plugins` in an interactive session:
+
+```
+/plugins enable my-plugin
+/plugins disable my-plugin
+```
+
+Or use the `--plugin`, `--mcp`, or `--skill` flags to target specific component types:
+
+```bash
+# Disable a specific MCP server from a plugin
+/plugins disable --mcp postgres-server
+
+# Re-enable a skill
+/plugins enable --skill database-migrations
+```
+
+Disabled components are marked in `copilot skill list` output and are skipped at runtime until re-enabled.
+
+### Installing skills directly
+
+*(v1.0.72+)* You can install individual skill folders without packaging them in a full plugin:
+
+```bash
+# Install a skill from a local directory
+copilot plugins install --skill /path/to/my-skill
+
+# Install a skill from a URL
+copilot plugins install --skill https://example.com/skill.zip
+
+# Install into the current repository (project scope)
+copilot plugins install --skill /path/to/my-skill --scope project
+```
+
+Remove installed skills with:
+
+```bash
+copilot plugins remove --skill my-skill-name
 ```
 
 ### Loading Plugins from a Local Directory
