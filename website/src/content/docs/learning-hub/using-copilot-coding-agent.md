@@ -3,7 +3,7 @@ title: 'Using the Copilot Coding Agent'
 description: 'Learn how to use GitHub Copilot coding agent to autonomously work on issues, generate pull requests, and automate development tasks.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-05-13
+lastUpdated: 2026-08-10
 estimatedReadingTime: '12 minutes'
 tags:
   - coding-agent
@@ -376,6 +376,24 @@ Since v1.0.47, `--resume` also surfaces **cloud agent sessions that haven't yet 
 | No PR required | You can steer tasks that haven't yet opened a pull request |
 
 > **Note**: Remote control replaces the earlier "steering" feature. If you see references to steering in older documentation, remote control is the updated equivalent.
+
+## Plan-Then-Implement Workflow
+
+You can combine `--plan` with `--mode autopilot` to have the coding agent first produce a plan for your review, then automatically proceed with implementation — all without waiting for a manual approval step between planning and coding:
+
+```bash
+copilot --plan --mode autopilot "implement rate limiting on the login endpoint"
+```
+
+This workflow is useful when you want visibility into the agent's intended approach before it starts making changes, while still keeping the end-to-end process fully automated. The agent:
+
+1. Produces a plan and pauses for your review
+2. Proceeds to implement without requiring further prompts
+3. Opens a PR when the work is complete
+
+Without `--mode autopilot`, `--plan` pauses after the plan and waits for you to approve before continuing. Without `--plan`, `--mode autopilot` implements immediately without a planning step.
+
+
 
 ## Hooks and the Coding Agent
 
