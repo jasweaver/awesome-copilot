@@ -3,7 +3,7 @@ title: 'Using the Copilot Coding Agent'
 description: 'Learn how to use GitHub Copilot coding agent to autonomously work on issues, generate pull requests, and automate development tasks.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-05-13
+lastUpdated: 2026-08-11
 estimatedReadingTime: '12 minutes'
 tags:
   - coding-agent
@@ -171,6 +171,16 @@ the language and framework. Never modify production code unless asked.
 ```
 
 > **Tip**: Browse the [Agents Directory](../../agents/) on this site for ready-to-use agent profiles you can add to your repository.
+
+### Plan First, Then Implement Automatically
+
+Combine `--plan` with `--mode autopilot` to have the agent produce a plan and then immediately implement it without waiting for your approval:
+
+```bash
+copilot --plan --mode autopilot
+```
+
+This is useful when you trust the agent's judgment for a well-scoped task and want to skip the intermediate plan-review step. The agent plans, then proceeds directly to implementation in a single uninterrupted run. For tasks where you want to review the plan before committing to implementation, omit `--mode autopilot` and the agent will pause after planning.
 
 ## Writing Effective Issues for the Coding Agent
 

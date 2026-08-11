@@ -3,7 +3,7 @@ title: 'Getting Started with the GitHub Copilot app'
 description: 'Learn about the GitHub Copilot app, a desktop experience built for agent-native development. Understand its key features and who it''s for.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-17
+lastUpdated: 2026-08-11
 estimatedReadingTime: '8 minutes'
 tags:
   - copilot-app
@@ -66,6 +66,34 @@ Each session the Copilot app creates runs in its own **git worktree**—a real, 
 - You can pick up a session from any device, on any worktree
 
 This makes it easy to dispatch multiple agents and trust they won't interfere with each other.
+
+#### Starting a New Worktree Session from the CLI
+
+The `/worktree new` command starts a fresh session in a new worktree directly from the CLI:
+
+```
+/worktree new
+```
+
+Combined with `--worktree` at startup, this lets you kick off isolated work without leaving the terminal.
+
+#### Controlling the Worktree Base Branch
+
+By default, `/worktree`, `/worktree new`, and `--worktree` all start from your current `HEAD`. Use the `worktreeBaseRef` setting to change this behaviour:
+
+```json
+// ~/.copilot/config.json
+{
+  "worktreeBaseRef": "origin/main"
+}
+```
+
+| Value | Behaviour |
+|-------|-----------|
+| `HEAD` (default) | New worktree branches off your current commit |
+| `origin/main` (or any remote ref) | New worktree always branches from the remote default branch |
+
+This is useful when you want parallel agent work to always start clean from the main branch rather than from wherever your local checkout happens to be.
 
 ### Canvases
 
@@ -277,6 +305,28 @@ Enable Agent Merge to automate routine PR workflows:
 3. Create a session to implement a feature
 4. When the PR is created, Agent Merge monitors it
 5. It runs CI, waits for reviews, addresses feedback, and merges when ready
+
+### Managing Multiple Sessions with the Sessions Tab
+
+The **Sessions** tab and sidebar let you manage all concurrent agent sessions in one place. Switch between sessions, inspect their status, and track what each agent is doing—all without losing your place in any individual session. This is especially useful when you have several agents running in parallel on different tasks.
+
+### Queuing Prompts for Sequential Execution
+
+You can queue prompts, shell commands, and supported slash commands to run in order after the current task finishes:
+
+- Type your next prompt and it will be held in the queue until the active task completes
+- Pending prompts are shown as **pending · ctrl+c to cancel** in the UI
+- This lets you chain work without waiting for each step to finish before typing the next instruction
+
+### Opening a Session in the Copilot App from the CLI
+
+The `/app` command opens your current CLI session in the GitHub Copilot desktop app (requires app v1.1.3 or later):
+
+```
+/app
+```
+
+This is useful when you want to continue a CLI session in the visual interface, or hand off work to the desktop app without losing context.
 
 ## Next Steps
 
