@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-12
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -429,6 +429,9 @@ CLI settings use **camelCase** naming. Key settings added in recent releases:
 | `proxy` | HTTP(S) proxy URL for all outbound CLI requests (e.g., `http://proxy.example.com:8080`) (v1.0.64+) |
 | `sessionLimits` | Restrict credit or turn usage for a session; limits apply across the current conversation and reset on `/clear` (v1.0.66+) |
 | `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+) |
+| `pinnedPrompts` | Show the current prompt pinned as a single line above the timeline (off by default; set to `true` to enable; automatically disabled on terminals under 30 rows unless set explicitly) (v1.0.79+) |
+| `worktreeBaseRef` | Controls whether `/worktree`, `/worktree new`, and `--worktree` start from HEAD or the remote default branch. All three default to `HEAD`; set to `"remote"` to start from the remote default branch (v1.0.79+) |
+| `allowDevToolAccess` | Grant sandbox access to dev-tool config, registries, and caches (e.g., npm, pip, cargo caches). **Renamed from `allowDevToolCaches` in v1.0.79** — rename in settings.json and any MDM/managed policy (v1.0.79+) |
 
 > **Note**: Older snake_case names (e.g., `include_gitignored`, `auto_updates_channel`) are still accepted for backward compatibility, but camelCase is now the preferred format.
 
@@ -469,6 +472,15 @@ The settings dialog supports search — type to filter settings by name. Changes
 ```
 
 These flags mirror the **Repo** and **Repo (local)** scope tabs available in the `/settings` dashboard (v1.0.71+), making it easier to manage per-repository vs. user-global configuration without ambiguity. In v1.0.71+, the `/settings` dashboard also shows **Repo** and **Repo (local)** tabs alongside the existing user-level view, giving you a unified place to see which settings are applied at each layer.
+
+*(v1.0.79+)* **`/model` is now session-scoped by default.** Changing the model with `/model` affects only the current session and is not saved to your config. To set a persistent model default for future sessions, use `/config model`:
+
+```
+/model claude-sonnet-4.6   # switch model for this session only
+/config model              # open the model picker and save to config (persistent)
+```
+
+This change prevents accidental permanent model switches when you temporarily try a different model during a session.
 
 GitHub Copilot CLI has two commands for managing session state, with distinct behaviours:
 
@@ -555,6 +567,14 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
+*(v1.0.79+)* Use `/worktree new` to **start a fresh session in a new worktree** without specifying a branch name — the CLI creates the worktree and opens a new session within it:
+
+```
+/worktree new
+```
+
+This is useful when you want to spin off a parallel piece of work from a clean session while keeping your current session active. By default, all worktree commands (`/worktree`, `/worktree new`, and `--worktree`) start from `HEAD`. Use the `worktreeBaseRef` setting (see the settings table above) to change this to the remote default branch.
+
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
@@ -626,6 +646,8 @@ The `/diagnose` command (v1.0.64+) analyzes the current session's logs and surfa
 Use `/diagnose` when a session is behaving unexpectedly — it inspects session logs and reports what it finds, making it easier to share diagnostics with support or understand what happened internally.
 
 **Keyboard shortcuts for queuing messages**: Use **Ctrl+Q** or **Ctrl+Enter** to queue a message (send it while the agent is still working). **Ctrl+D** no longer queues messages — it now has its default terminal behavior. If you have muscle memory for Ctrl+D queuing, switch to Ctrl+Q.
+
+*(v1.0.79+)* **Queue prompts and slash commands**: In local sessions, you can queue entire prompts, shell commands, and supported slash commands to run in order after the current task finishes. While the agent is working on a task, type your next prompt and use Ctrl+Q (or Ctrl+Enter) to enqueue it. Queued items run sequentially as each task completes — useful for lining up a series of tasks without waiting for each one manually.
 
 **Background running tasks**: Press **Ctrl+X → B** to move the current running task or shell command to the background. The task continues executing while you can type a new message or review earlier output. This is useful for long-running commands where you want to interact with the agent while waiting for the result.
 
@@ -703,6 +725,16 @@ The `/allow-all` command (also accessible as `/yolo`) enables autopilot mode, wh
 
 > **ACP clients (v1.0.39+)**: ACP clients can also toggle allow-all mode programmatically via session configuration, without issuing a slash command. This is useful for automated pipelines that drive Copilot CLI through the ACP protocol.
 
+*(v1.0.79+)* Use `/sandbox policy` to **inspect your effective sandbox configuration** — it shows the active paths, recent denials, and network access settings in a single view. This is useful for diagnosing why a tool or shell command is being blocked:
+
+```
+/sandbox policy
+```
+
+The sandbox dialog (`/sandbox`) now also tags inactive settings as `(disabled)` and explains why they are locked, making it easier to understand which settings are overridden by enterprise policy.
+
+> **BREAKING CHANGE (v1.0.79)**: The sandbox setting `allowDevToolCaches` has been **renamed to `allowDevToolAccess`**. The old key is no longer read and is silently ignored, so an existing `false` opt-out reverts to the default (on). **Update this key in your `settings.json` and in any managed/MDM policy** to preserve your intended behavior.
+
 The `/autopilot` command (v1.0.45+) is a quick in-session toggle that switches between **interactive mode** (where the agent pauses to ask for confirmation before tool use) and **autopilot mode** (where it runs autonomously). Unlike `/allow-all` which specifically controls whether tool permissions are required, `/autopilot` toggles the overall agent mode:
 
 ```
@@ -743,6 +775,14 @@ copilot --plan          # start in plan mode (propose without executing)
 ```
 
 This is useful in scripts or CI pipelines where you want the CLI to immediately begin working in a specific mode without an interactive prompt.
+
+*(v1.0.79+)* You can combine `--plan` with `--mode autopilot` to **plan first, then implement automatically** without waiting for approval after the plan is shown:
+
+```bash
+copilot --plan --mode autopilot -p "Refactor the authentication module"
+```
+
+This runs the planning pass first (letting you see the proposed approach), then switches directly to autopilot to execute — useful in automated pipelines where you want a structured plan step before unrestricted execution.
 
 The `--max-autopilot-continues` flag controls how many times Copilot can automatically continue in autopilot mode before pausing for confirmation. The default is 5:
 
