@@ -192,6 +192,8 @@ my-monorepo/
 
 When you work inside `packages/api/`, Copilot loads configuration from `packages/api/.github/`, then `packages/.github/` (if it exists), then the root `.github/`. This layered discovery ensures the right context is active no matter where in the repository you're working.
 
+**Faster search in large monorepos** *(v1.0.79+)*: For large monorepos, Copilot CLI's built-in search tool now uses [`tgrep`](https://github.com/microsoft/tgrep) — a trigram-indexed grep — instead of ripgrep, speeding up regex searches across big codebases without any configuration changes needed.
+
 ### Personal Skills Directory
 
 In addition to repository-level skills, GitHub Copilot CLI supports **personal skills directories** at `~/.copilot/skills/` and `~/.agents/skills/`. Skills you place in either location are discovered automatically across all your projects, making them ideal for personal workflows and reusable utilities that are not project-specific.
@@ -754,6 +756,8 @@ Use `/autopilot` when you want to flip between supervised and unsupervised opera
 > **Auto allow-all mode (v1.0.69+)**: In addition to the standard allow-all mode (which approves everything), the CLI now supports an **auto allow-all** mode that uses an LLM judge to evaluate each tool request. When enabled, the judge automatically approves requests it evaluates as acceptable, and asks you for manual confirmation only for requests it considers risky. This gives you a middle ground between full autopilot and fully supervised operation — most routine actions proceed automatically while unusual or potentially dangerous actions still surface for your review. As of v1.0.69-3, this mode requires experimental features to be enabled — use `/experimental on` or start the CLI with `--experimental` — then activate it with `/allow-all auto`. The previous `AUTO_APPROVAL` environment variable approach has been removed in favour of experimental mode.
 
 > **Read-only `gh` CLI commands (v1.0.46+)**: Read-only `gh` commands — such as `gh issue list`, `gh pr view`, `gh run status`, and other commands that don't write to GitHub — are **automatically approved** without a permission prompt. Only commands that write to GitHub (like creating issues, merging PRs) still require explicit approval. This reduces friction during exploratory sessions where you frequently check issue or PR status.
+
+> **Enterprise allow-auto-only policy** *(v1.0.79+)*: Enterprise-managed sandbox policies can now restrict a session to **auto allow-all** mode (the LLM-judged middle ground) while blocking full allow-all. Under this policy, `/allow-all auto` still works, but `/allow-all on` remains blocked — letting administrators permit low-risk automation without opening the door to unconditional tool approval.
 
 The `/permissions` command *(v1.0.78+)* opens an interactive picker for switching between approval modes mid-session. Instead of typing `/allow-all on` or `/autopilot`, `/permissions` gives you a visual overview of available modes — interactive, autopilot, auto (LLM-judged), and plan — and lets you switch with a single keypress:
 
