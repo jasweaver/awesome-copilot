@@ -3,7 +3,7 @@ title: '01 · First Steps'
 description: 'Experience your first GitHub Copilot CLI demos and learn the three main interaction modes.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-17
+lastUpdated: 2026-08-14
 ---
 
 ![Chapter 01: First Steps](/images/learning-hub/copilot-cli-for-beginners/01/chapter-header.png)
@@ -442,6 +442,7 @@ That's it for getting started! As you become comfortable, you can explore additi
 | `/resume` | Switch to a different session (optionally specify session ID) |
 | `/rename` | Rename the current session |
 | `/context` | Show context window token usage and visualization |
+| `/rewind` | Open a timeline picker to roll back to any earlier point in the conversation; optionally restores the files Copilot changed (works without git) |
 | `/usage` | Display session usage metrics and statistics |
 | `/session` | Show session info and workspace summary |
 | `/compact` | Summarize conversation to reduce context usage |
