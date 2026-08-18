@@ -3,7 +3,7 @@ title: 'Getting Started with the GitHub Copilot app'
 description: 'Learn about the GitHub Copilot app, a desktop experience built for agent-native development. Understand its key features and who it''s for.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-08-07
+lastUpdated: 2026-08-18
 estimatedReadingTime: '8 minutes'
 tags:
   - copilot-app
@@ -98,6 +98,14 @@ Agent Merge also understands **stacked pull requests**: it shows a stack summary
 ### Requesting Code Reviews
 
 From the app, you can request a Copilot code review on a pull request—and re-request a review even from reviewers who already responded—without leaving the session. This keeps the review loop inside the same workspace where the change was made.
+
+### Attaching Media to Pull Requests
+
+*(v1.1.9+)* Agents can attach screenshots, diagrams, and recordings directly to pull request descriptions and comments without requiring staff access. This makes it easy to have an agent capture a UI state, a browser preview, or a diagram and embed it inline for reviewers—no separate upload step required.
+
+### Managing Skills and Plugins from Customize
+
+*(v1.1.9+)* You can create, edit, and remove **personal skills** directly from **Customize**, with a Markdown preview and validation built in—no need to hand-edit `SKILL.md` files outside the app. Installed **plugins** can also be updated from Customize or Settings, individually or all at once, and each plugin's installed version is shown alongside it.
 
 ## Who is the Copilot app for?
 
